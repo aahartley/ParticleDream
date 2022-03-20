@@ -2,23 +2,43 @@
 #include "Particle.h"
 #include "Matrix.h"
 #include <iostream>
+constexpr float acceleration = 10.0f;
 Sim::Sim() {
     sf::ContextSettings settings;
     settings.antialiasingLevel = 8;
     window = new sf::RenderWindow(sf::VideoMode(800, 800), "Particles", sf::Style::Default, settings);
 }
 
-void Sim::path(Matrix& matrix,float dt) {
-    float v0 = 0 + 10 * dt;
+void Sim::path(Matrix& matrix,float dt,std::vector<Particle*>& buffer) {
     float transform[5][1]= {
-                             {0},
-                             {10.0f * dt},
-                             {0},
-                             {((v0 +v0)/ 2) * dt},
-                             {1}
+                             {acceleration}, //vx
+                             {acceleration * dt}, //vy
+                             {acceleration *dt},  //x
+                             {(1 + (1) / 2)* dt}, //y
+                             {1} //z
                            };
-
+    
     matrix.add(transform,dt);
+    for (int i = 0; i < 2; i++) {
+
+        if (matrix[i][3] >= 690) {
+            float v = matrix[i][1];
+            matrix[i][1] = matrix[i][1] - 2 * (matrix[i][1] * 1) * 1;
+            matrix[i][3] += ((v + matrix[i][1]) / 2) * dt;
+        }
+    }
+    for (int i = 0; i < buffer.size(); i++) {
+        for (int j = 0; j < 1; j++) {
+            buffer[i]->velocity.x = matrix[i][j];
+            buffer[i]->velocity.y = matrix[i][j + 1];
+            buffer[i]->coord.x = matrix[i][j + 2];
+            buffer[i]->coord.y = matrix[i][j + 3];
+            //   coords[i][j + 4] 
+
+
+        }
+        buffer[i]->circle.setPosition(buffer[i]->coord);
+    }
 }
 void Sim::draw() {
     window->setFramerateLimit(60);
@@ -27,6 +47,12 @@ void Sim::draw() {
     sf::CircleShape circle{ 5.0f };
     circle.setPosition(p1.coord);
     p1.circle = circle;
+    p1.coord2 = sf::Vector2f{ p1.coord.x,p1.coord.y - 5 };
+    sf::CircleShape tail{ 5.0f };
+   // tail.setFillColor(sf::Color::Red);
+    tail.setPosition(p1.coord2);
+    p1.circle2 = tail;
+
     sf::CircleShape circle2{ 10.0f };
     circle2.setPosition(p2.coord);
     p2.circle = circle2;
@@ -112,36 +138,21 @@ void Sim::draw() {
                             }*/
             }
         }
-        if (!first) {
-            for (int i = 0; i < buffer.size(); i++) {
-                buffer[i]->initialize(dt);
-            }
-           // first = false;
-        }
-        else {
-            //#pragma omp parallel for num_threads(2) schedule(static)
-            for (int i = 0; i < buffer.size(); i++) {
-             //   buffer[i]->calculation(dt);
-            }
-            t.constant(dt);
-
-            path(coords,dt);
-        }
+    
+        //#pragma omp parallel for num_threads(2) schedule(static)
         for (int i = 0; i < buffer.size(); i++) {
-            for (int j = 0; j < 1; j++) {
-                buffer[i]->velocity.x = coords[i][j];
-                buffer[i]->velocity.y = coords[i][j + 1];
-                buffer[i]->coord.x= coords[i][j + 2];
-                buffer[i]->coord.y = coords[i][j + 3];
-             //   coords[i][j + 4] 
-
-
-            }
-            buffer[i]->circle.setPosition(buffer[i]->coord);
+                    buffer[i]->calculation(dt);
         }
+        t.constant(dt);
+
+      //  path(coords,dt,buffer);
+        
+ 
             window->clear();
             for (int i = 0; i < buffer.size(); i++) {
                 window->draw(buffer[i]->circle);
+                window->draw(buffer[i]->circle2);
+
             }
             window->draw(t.circle);
             window->draw(lines, 2, sf::Lines);

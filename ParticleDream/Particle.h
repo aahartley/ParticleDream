@@ -5,8 +5,11 @@ class Particle {
 public:
 	Particle(sf::Vector2f coord, float mass);
 	sf::Vector2f coord;
+	sf::Vector2f coord2;
 	sf::CircleShape circle;
+	sf::CircleShape circle2;
 	sf::Vector2f velocity;
+	sf::Vector2f velocity2;
 	sf::Vector2f acceleration;
 	float startY = coord.y;
 	void calculation(float dt);
@@ -20,6 +23,8 @@ public:
 private:
 
 	float mass, elasticity;
+	float u = 0.7f;
+	float e = 0.7f;
 
 
 };
