@@ -31,14 +31,20 @@ Matrix::Matrix(float x, float y, float n) {
 	}
 	//std::cout << '\n';
 }
-void Matrix::add(float matrix[5][1], float dt) {
+void Matrix::add(float trans[5][1], float dt) {
+	int acclerarion = 10;
 	for (int i = 0; i <2; i++) {
+		m[i][0] += trans[0][0];
+		m[i][1] += trans[1][0];
+		m[i][2] += trans[2][0]+m[i][0]*dt;
+		m[i][3] +=trans[3][0]+m[i][1]*dt
 		for (int j = 0; j < 5; j++) {
 			//std::cout << "m: " << m[i][j] << " " << " trans: " << transform[j][i] << " ";
 			if (j == 3) {
-				matrix[j][0] = ((m[i][j - 2] + m[i][j - 2]+10.0f*dt) / 2) * dt; // I need this matrix to have the v' values
+				trans[j][0] = ((m[i][j - 2] + m[i][j - 2]+acclerarion
+				*dt) / 2) * dt; // I need this matrix to have the v' values
 			}
-			m[i][j] += matrix[j][0];
+			m[i][j] += trans[j][0];
 		
 		}
 	}

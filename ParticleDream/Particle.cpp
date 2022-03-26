@@ -4,8 +4,8 @@ Particle::Particle(sf::Vector2f coord, float mass)
 {
 	this->coord = coord;
 	this->mass = mass;
-	this->velocity = sf::Vector2f{30.0,0 };
-	float force = 300.0f * mass;
+	this->velocity = sf::Vector2f{100.0,0 };
+	float force = 800.0f * mass;
 	this->acceleration = sf::Vector2f{ 0,force / mass };
 	this->elasticity = 1.0f;
 }
@@ -110,7 +110,7 @@ void Particle::calculation(float dt)
 		sf::Vector2f Vt{ (velocity.y - Vn.y),velocity.y };
 
 		//V' = (1-u)Vt-eVn    //u- friction   //e-resilience   0.0-1.0
-		velocity.x = (1 - 0.5f) * Vt.x - 0.5f * Vn.x;
+		velocity.x = (1 - u) * Vt.x - e * Vn.x;
 		float S;
 		if (coord.x <= 100)
 			S = 100.0f;
@@ -119,9 +119,30 @@ void Particle::calculation(float dt)
 		coord.x = coord.x - 2 * ((coord.x - S) * 1) * 1;
 
 		//P't = Pt - 2[(Pt-S)*N]N
-		coord2.x = coord2.x - 2 * ((coord2.x - S) * 1) * 1;
+		//coord2.x = coord2.x - 2 * ((coord2.x - S) * 1) * 1;
 	}
-	else if (coord.y >= 680 && circle.getRadius() == 10.0f) {
+	if (coord2.x <= 100 || coord2.x >= 690 && circle2.getRadius() == 5.0f) {
+
+		//collision-complicated
+		// Vn = (V*N)N
+		sf::Vector2f Vn{ (velocity2.x * 1) * 1,velocity2.y };
+		//Vt = V-Vn      
+		sf::Vector2f Vt{ (velocity2.y - Vn.y),velocity2.y };
+
+		//V' = (1-u)Vt-eVn    //u- friction   //e-resilience   0.0-1.0
+		velocity2.x = (1 - u) * Vt.x - e * Vn.x;
+		float S;
+		if (coord2.x <= 100)
+			S = 100.0f;
+		else S = 690.0f;
+		//P'h = Ph - 2[(Ph-S)*N]N
+		coord2.x = coord2.x - 2 * ((coord2.x - S) * 1) * 1;
+
+		//P't = Pt - 2[(Pt-S)*N]N
+		//coord2.x = coord2.x - 2 * ((coord2.x - S) * 1) * 1;
+	}
+	if (coord.y >= 680 && circle.getRadius() == 10.0f) {
+
 		//collision-complicated
 		// Vn = (V*N)N
 		sf::Vector2f Vn{ velocity.x,(velocity.y * 1) * 1 };
@@ -129,12 +150,86 @@ void Particle::calculation(float dt)
 		sf::Vector2f Vt{ velocity.x,(velocity.y - Vn.y) };
 
 		//V' = (1-u)Vt-eVn    //u- friction   //e-resilience   0.0-1.0
-		velocity.y = (1 - 0.5f) * Vt.y - 0.5f * Vn.y;
+		velocity.y = (1 - u) * Vt.y - e * Vn.y;
 
 		//P'h = Ph - 2[(Ph-S)*N]N
 		coord.y = coord.y - 2 * ((coord.y - 680.0f) * 1) * 1;
+
+		//P't = Pt - 2[(Pt-S)*N]N
+		//coord2.y = coord2.y - 2 * ((coord2.y - 690.0f) * 1) * 1;
+
+		/*
+		//for spheres N=Ph-C/|Ph-C|,  S = C+rN
+		float N = coord.y - 685.0f / std::abs(coord.y - 685.0f);
+		float S = 685.0f + 5.0f * N;
+		// Vn = (V*N)N
+		sf::Vector2f Vn{ velocity.x,(velocity.y * N) * N };
+		//Vt = V-Vn
+		sf::Vector2f Vt{ velocity.x,(velocity.y - Vn.y) };
+
+		//V' = (1-u)Vt-eVn    //u- friction   //e-resilience   0.0-1.0
+		velocity.y = (1 - 0.5f) * Vt.y - 0.5f * Vn.y;
+
+		//P'h = Ph - 2[(Ph-S)*N]N
+		coord.y = coord.y - 2 * ((coord.y - S) * N) * N;
+
+		//P't = Pt - 2[(Pt-S)*N]N
+		*/
 	}
-	std::cout << "calc y " << coord.y <<'\n';
+	if (coord2.y >= 680 && circle.getRadius() == 10.0f) {
+		//collision-complicated
+		// Vn = (V*N)N
+		sf::Vector2f Vn{ velocity2.x,(velocity2.y * 1) * 1 };
+		//Vt = V-Vn      
+		sf::Vector2f Vt{ velocity2.x,(velocity2.y - Vn.y) };
+
+		//V' = (1-u)Vt-eVn    //u- friction   //e-resilience   0.0-1.0
+		velocity2.y = (1 - u) * Vt.y - e * Vn.y;
+
+		//P't = Pt - 2[(Pt-S)*N]N
+		coord2.y = coord2.y - 2 * ((coord2.y - 680.0f) * 1) * 1;
+	}
+	if (coord.x <= 100 || coord.x >= 680 && circle.getRadius() == 10.0f) {
+
+		//collision-complicated
+		// Vn = (V*N)N
+		sf::Vector2f Vn{ (velocity.x * 1) * 1,velocity.y };
+		//Vt = V-Vn      
+		sf::Vector2f Vt{ (velocity.y - Vn.y),velocity.y };
+
+		//V' = (1-u)Vt-eVn    //u- friction   //e-resilience   0.0-1.0
+		velocity.x = (1 - u) * Vt.x - e * Vn.x;
+		float S;
+		if (coord.x <= 100)
+			S = 100.0f;
+		else S = 680.0f;
+		//P'h = Ph - 2[(Ph-S)*N]N
+		coord.x = coord.x - 2 * ((coord.x - S) * 1) * 1;
+
+		//P't = Pt - 2[(Pt-S)*N]N
+		//coord2.x = coord2.x - 2 * ((coord2.x - S) * 1) * 1;
+	}
+	if (coord2.x <= 100 || coord2.x >= 680 && circle2.getRadius() == 10.0f) {
+
+		//collision-complicated
+		// Vn = (V*N)N
+		sf::Vector2f Vn{ (velocity2.x * 1) * 1,velocity2.y };
+		//Vt = V-Vn      
+		sf::Vector2f Vt{ (velocity2.y - Vn.y),velocity2.y };
+
+		//V' = (1-u)Vt-eVn    //u- friction   //e-resilience   0.0-1.0
+		velocity2.x = (1 - u) * Vt.x - e * Vn.x;
+		float S;
+		if (coord2.x <= 100)
+			S = 100.0f;
+		else S = 680.0f;
+		//P'h = Ph - 2[(Ph-S)*N]N
+		coord2.x = coord2.x - 2 * ((coord2.x - S) * 1) * 1;
+
+		//P't = Pt - 2[(Pt-S)*N]N
+		//coord2.x = coord2.x - 2 * ((coord2.x - S) * 1) * 1;
+	}
+//	std::cout << "calc y " << coord.y <<'\n';
 
 	circle.setPosition(coord);
 	circle2.setPosition(coord2);

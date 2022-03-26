@@ -11,10 +11,10 @@ Sim::Sim() {
 
 void Sim::path(Matrix& matrix,float dt,std::vector<Particle*>& buffer) {
     float transform[5][1]= {
-                             {acceleration}, //vx
+                             {0}, //vx
                              {acceleration * dt}, //vy
-                             {acceleration *dt},  //x
-                             {(1 + (1) / 2)* dt}, //y
+                             {0},  //x
+                             {-0.5*acceleration* dt*dt}, //y
                              {1} //z
                            };
     
@@ -42,20 +42,23 @@ void Sim::path(Matrix& matrix,float dt,std::vector<Particle*>& buffer) {
 }
 void Sim::draw() {
     window->setFramerateLimit(60);
-    Particle p1{ sf::Vector2f{400,200},10.0f };
+    Particle p1{ sf::Vector2f{650,200},10.0f };
     Particle p2{ sf::Vector2f{500,190},100.0f };
     sf::CircleShape circle{ 5.0f };
     circle.setPosition(p1.coord);
     p1.circle = circle;
     p1.coord2 = sf::Vector2f{ p1.coord.x,p1.coord.y - 5 };
     sf::CircleShape tail{ 5.0f };
-   // tail.setFillColor(sf::Color::Red);
+    tail.setFillColor(sf::Color::Red);
     tail.setPosition(p1.coord2);
     p1.circle2 = tail;
 
     sf::CircleShape circle2{ 10.0f };
     circle2.setPosition(p2.coord);
     p2.circle = circle2;
+    sf::CircleShape tail2{ 10.0f };
+    p2.coord2 = sf::Vector2f{ p2.coord.x,p2.coord.y - 10 };
+    p2.circle2 = tail2;
 
     Particle t{ sf::Vector2f{300,200},10.0f };
     sf::CircleShape test{ 5.0f };

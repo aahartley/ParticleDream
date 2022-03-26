@@ -21,10 +21,9 @@ public:
 	//void draw(float dt);
 	float getMass() { return mass; }
 private:
-
 	float mass, elasticity;
-	float u = 0.7f;
-	float e = 0.7f;
+	float u = 1.0f;
+	float e = 1.0f;
 
 
 };
