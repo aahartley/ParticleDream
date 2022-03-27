@@ -4,7 +4,8 @@
 #include <iostream>
 float acceleration = 800.0f;
 constexpr float u = 1.0f;
-constexpr float e = 0.5f;
+constexpr float e = 0.3f;
+float num = 1000;
 
 Sim::Sim() {
     sf::ContextSettings settings;
@@ -12,9 +13,9 @@ Sim::Sim() {
     window = new sf::RenderWindow(sf::VideoMode(800, 800), "Particles", sf::Style::Default, settings);
 }
 void collision(Matrix& matrix) {
-    for (int i = 0; i < 2; i++) {
+    for (int i = 0; i < num; i++) {
 
-        if ((matrix[i][3] >= 690 || matrix[i][3] <= 200) && matrix[i][6] == 5.0f) {
+        if ((matrix[i][3] >= 250 || matrix[i][3] <= 198)&& matrix[i][2] <= 200) {
             // Vn = (V*N)N
             sf::Vector2f Vn{ matrix[i][0],(matrix[i][1] * 1) * 1 };
             //Vt = V-Vn      
@@ -24,13 +25,45 @@ void collision(Matrix& matrix) {
             matrix[i][1] = (1 - u) * Vt.y - e * Vn.y;
             float S;
             if (matrix[i][3] <= 200)S = 200.0f;
-            if (matrix[i][3] >= 690)S = 690.0f;
+            if (matrix[i][3] >= 250)S = 250.0f;
             //P'h = Ph - 2[(Ph-S)*N]N
             matrix[i][3] = matrix[i][3] - 2 * ((matrix[i][3] - S) * 1) * 1;
             //P't = Pt - 2[(Pt-S)*N]N
             matrix[i][5] = matrix[i][5] - 2 * ((matrix[i][5] - S) * 1) * 1;
         }
-        if ((matrix[i][2] >= 690 || matrix[i][2] <= 100) && matrix[i][6] == 5.0f) {
+        if ((matrix[i][3] >= 450 || matrix[i][3] <= 198) && matrix[i][2] <= 350) {
+            // Vn = (V*N)N
+            sf::Vector2f Vn{ matrix[i][0],(matrix[i][1] * 1) * 1 };
+            //Vt = V-Vn      
+            sf::Vector2f Vt{ matrix[i][0],(matrix[i][1] - Vn.y) };
+
+            //V' = (1-u)Vt-eVn    //u- friction   //e-resilience   0.0-1.0
+            matrix[i][1] = (1 - u) * Vt.y - e * Vn.y;
+            float S;
+            if (matrix[i][3] <= 200)S = 200.0f;
+            if (matrix[i][3] >= 450)S = 450.0f;
+            //P'h = Ph - 2[(Ph-S)*N]N
+            matrix[i][3] = matrix[i][3] - 2 * ((matrix[i][3] - S) * 1) * 1;
+            //P't = Pt - 2[(Pt-S)*N]N
+            matrix[i][5] = matrix[i][5] - 2 * ((matrix[i][5] - S) * 1) * 1;
+        }
+        else if ((matrix[i][3] >= 700 || matrix[i][3] <= 198) ) {
+           // Vn = (V*N)N
+            sf::Vector2f Vn{ matrix[i][0],(matrix[i][1] * 1) * 1 };
+            //Vt = V-Vn      
+            sf::Vector2f Vt{ matrix[i][0],(matrix[i][1] - Vn.y) };
+
+            //V' = (1-u)Vt-eVn    //u- friction   //e-resilience   0.0-1.0
+            matrix[i][1] = (1 - u) * Vt.y - e * Vn.y;
+            float S;
+            if (matrix[i][3] <= 200)S = 200.0f;
+            if (matrix[i][3] >= 700)S = 700.0f;
+            //P'h = Ph - 2[(Ph-S)*N]N
+            matrix[i][3] = matrix[i][3] - 2 * ((matrix[i][3] - S) * 1) * 1;
+            //P't = Pt - 2[(Pt-S)*N]N
+            matrix[i][5] = matrix[i][5] - 2 * ((matrix[i][5] - S) * 1) * 1;
+        }       
+        if ((matrix[i][2] >= 698 || matrix[i][2] <= 100) ) {
             // Vn = (V*N)N
             sf::Vector2f Vn{ matrix[i][0],(matrix[i][1] * 1) * 1 };
             //Vt = V-Vn      
@@ -50,38 +83,7 @@ void collision(Matrix& matrix) {
 
         
 
-        if ((matrix[i][3] >= 680 || matrix[i][3] <= 200) && matrix[i][6] == 10.0f) {
-            // Vn = (V*N)N
-            sf::Vector2f Vn{ matrix[i][0],(matrix[i][1] * 1) * 1 };
-            //Vt = V-Vn      
-            sf::Vector2f Vt{ matrix[i][0],(matrix[i][1] - Vn.y) };
-
-            //V' = (1-u)Vt-eVn    //u- friction   //e-resilience   0.0-1.0
-            matrix[i][1] = (1 - u) * Vt.y - e * Vn.y;
-            float S;
-            if (matrix[i][3] <= 200)S = 200.0f;
-            if (matrix[i][3] >= 680)S = 680.0f;
-            //P'h = Ph - 2[(Ph-S)*N]N
-            matrix[i][3] = matrix[i][3] - 2 * ((matrix[i][3] - S) * 1) * 1;
-            //P't = Pt - 2[(Pt-S)*N]N
-            matrix[i][5] = matrix[i][5] - 2 * ((matrix[i][5] - S) * 1) * 1;
-        }
-        if ((matrix[i][2] >= 680 || matrix[i][2] <= 100) && matrix[i][6] == 10.0f) {
-            // Vn = (V*N)N
-            sf::Vector2f Vn{ matrix[i][0],(matrix[i][1] * 1) * 1 };
-            //Vt = V-Vn      
-            sf::Vector2f Vt{ matrix[i][0],(matrix[i][1] - Vn.y) };
-
-            //V' = (1-u)Vt-eVn    //u- friction   //e-resilience   0.0-1.0
-            matrix[i][0] = (1 - u) * Vt.x - e * Vn.x;
-            float S;
-            if (matrix[i][2] <= 100)S = 100.0f;
-            if (matrix[i][2] >= 680)S = 680.0f;
-            //P'h = Ph - 2[(Ph-S)*N]N
-            matrix[i][2] = matrix[i][2] - 2 * ((matrix[i][2] - S) * 1) * 1;
-            //P't = Pt - 2[(Pt-S)*N]N
-            matrix[i][4] = matrix[i][4] - 2 * ((matrix[i][4] - S) * 1) * 1;
-        }
+     
         
     }
 }
@@ -193,6 +195,7 @@ void Sim::draw() {
         if (time > 5 * 3)acceleration = -800.0f;
         if (time > 5 * 4)acceleration = 800.0f;
         if (time > 5 * 5)acceleration = -800.0f;
+        if (time > 5 * 6)acceleration = 800.0f;
 
 
 
@@ -242,19 +245,30 @@ void Sim::draw() {
                 window->draw(buffer[i]->circle2);
 
             }*/
-            for (int i = 0; i < 2; i++) {
-                sf::CircleShape circle;
-              //  std::cout << particles[i][6];
-                circle.setRadius(particles[i][6]);
-                circle.setPosition(sf::Vector2f{ particles[i][2],particles[i][3] });
-                sf::CircleShape circle2;
-                circle2.setRadius(particles[i][6]);
-                circle2.setPosition(sf::Vector2f{ particles[i][4],particles[i][5] });
-               // circle2.setFillColor(sf::Color::Red);
-                window->draw(circle);
-                window->draw(circle2);
+            sf::VertexArray points(sf::Points, num*2);
 
-            }
+            for (int i = 0; i < num; i++) {
+                sf::Vertex point;
+                sf::Vertex point2;
+
+              //  std::cout << particles[i][6];
+              //  circle.setRadius(particles[i][6]);
+              //  circle.setPosition(sf::Vector2f{ particles[i][2],particles[i][3] });
+                point.position = sf::Vector2f{ particles[i][2],particles[i][3] };
+              //  sf::CircleShape circle2;
+               //circle2.setRadius(particles[i][6]);
+              //  circle2.setPosition(sf::Vector2f{ particles[i][4],particles[i][5] });
+                point2.position = sf::Vector2f{ particles[i][4],particles[i][5] };
+               // point2.color = sf::Color::Red;
+
+               // circle2.setFillColor(sf::Color::Red);
+             //   window->draw(circle);
+              //  window->draw(circle2);
+                points.append(point);
+                points.append(point2);
+
+            }       
+            window->draw(points);
             window->draw(t.circle);
             window->draw(lines, 2, sf::Lines);
             window->draw(line, 2, sf::Lines);

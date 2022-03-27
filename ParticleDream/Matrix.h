@@ -13,5 +13,6 @@ public:
 	void add(float matrix[7], float dt);
 	void fill(std::vector<Particle*> particles);
 private:
-	float m[2][7]{ };
+	float m[1000][7]{ };
+	int num = 1000;
 };

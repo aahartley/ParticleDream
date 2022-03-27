@@ -13,10 +13,9 @@ void Matrix::fill(std::vector<Particle*> particles) {
 
 		}
 	}*/
-	float x = 650.0f;
-	float y = 250.0f;
-	for (int i = 0; i < 2; i++) {
-		x -= 100;
+	float x = 101.0f;
+	float y = 200.0f;
+	for (int i = 0; i < num; i++) {
 		if (i % 2 == 1) {
 			m[i][3] = y-10; //cy
 			m[i][5] = y-10; //cy2
@@ -31,6 +30,12 @@ void Matrix::fill(std::vector<Particle*> particles) {
 		m[i][1] = 0.0f; //vy
 		m[i][2] = x; //cx
 		m[i][4] = x; //cx2
+		if (i % 5 == 0) {
+						x++;
+
+		}
+		y++;
+
 
 
 
@@ -55,7 +60,7 @@ Matrix::Matrix(float x, float y, float n) {
 	//std::cout << '\n';
 }
 void Matrix::add(float trans[7], float dt) {
-	for (int i = 0; i <2; i++) {
+	for (int i = 0; i <num; i++) {
 		m[i][0] += trans[0];
 		m[i][1] += trans[1];// vy
 		//std::cout << "3 " << m[i][2] << ' ';
