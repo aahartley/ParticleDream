@@ -1,6 +1,7 @@
 #include "Matrix.h"
 
 void Matrix::fill(std::vector<Particle*> particles) {
+	/*
 	for (int i = 0; i < particles.size(); i++) {
 		for (int j = 0; j < 1; j++) {
 			m[i][j] = particles[i]->velocity.x;
@@ -11,6 +12,28 @@ void Matrix::fill(std::vector<Particle*> particles) {
 
 
 		}
+	}*/
+	float x = 650.0f;
+	float y = 250.0f;
+	for (int i = 0; i < 2; i++) {
+		x -= 100;
+		if (i % 2 == 1) {
+			m[i][3] = y-10; //cy
+			m[i][5] = y-10; //cy2
+			m[i][6] = 10.0f; //rad
+		}
+		else {
+			m[i][3] = y; //cy
+			m[i][5] = y; //cy2
+			m[i][6] = 5.0f; //rad
+		}
+		m[i][0] = 100.0f; //vx
+		m[i][1] = 0.0f; //vy
+		m[i][2] = x; //cx
+		m[i][4] = x; //cx2
+
+
+
 	}
 }
 
@@ -31,14 +54,20 @@ Matrix::Matrix(float x, float y, float n) {
 	}
 	//std::cout << '\n';
 }
-void Matrix::add(float trans[5][1], float dt) {
-	int acclerarion = 10;
+void Matrix::add(float trans[7], float dt) {
 	for (int i = 0; i <2; i++) {
-		m[i][0] += trans[0][0];
-		m[i][1] += trans[1][0];
-		m[i][2] += trans[2][0]+m[i][0]*dt;
-		m[i][3] +=trans[3][0]+m[i][1]*dt
-		for (int j = 0; j < 5; j++) {
+		m[i][0] += trans[0];
+		m[i][1] += trans[1];// vy
+		//std::cout << "3 " << m[i][2] << ' ';
+		m[i][4] = m[i][2];
+		m[i][5] = m[i][3];
+		m[i][2] += trans[2] + m[i][0] * dt; //cx
+		m[i][3] += trans[3] + ((m[i][1] - trans[1] + m[i][1]) / 2) * dt; //cy
+		//m[i][4] = m[i][2] - m[i][0] * dt;
+		//m[i][5] = m[i][3]- ((m[i][1] - trans[1] + m[i][1]) / 2) * dt;
+		//std::cout << "5 " << m[i][4] << " \n";
+		//std::cout << " 2 " << m[i][1] - trans[1][0] << '\n';	
+		/*	for (int j = 0; j < 5; j++) {
 			//std::cout << "m: " << m[i][j] << " " << " trans: " << transform[j][i] << " ";
 			if (j == 3) {
 				trans[j][0] = ((m[i][j - 2] + m[i][j - 2]+acclerarion
@@ -46,19 +75,20 @@ void Matrix::add(float trans[5][1], float dt) {
 			}
 			m[i][j] += trans[j][0];
 		
-		}
+		}*/
 	}
 	
 	//std::cout << "\n";
+	/*
 	for (int i = 0; i < 2; i++) {
 		for (int j = 0; j < 5; j++) {
 				//std::cout << m[i][j] << " \n";
 
 		}
-	}
+	}*/
 
 }
-void Matrix::multiply(float matrix[5][1]) {
+void Matrix::multiply(float matrix[7]) {
 	float transform[5][1]{ { 1},
 							{1.05 },
 							{1}

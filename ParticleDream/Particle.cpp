@@ -4,7 +4,8 @@ Particle::Particle(sf::Vector2f coord, float mass)
 {
 	this->coord = coord;
 	this->mass = mass;
-	this->velocity = sf::Vector2f{100.0,0 };
+	this->velocity = sf::Vector2f{00.0,0 };
+	this->velocity2 = sf::Vector2f{ 00.0,0 };
 	float force = 800.0f * mass;
 	this->acceleration = sf::Vector2f{ 0,force / mass };
 	this->elasticity = 1.0f;
@@ -20,6 +21,7 @@ void Particle::calculation(float dt)
 
 	//V' = V+ A delta t
 	float v = velocity.y;
+	float v2 = velocity2.y;
 	velocity.y = velocity.y + acceleration.y * dt;
 	velocity2.y = velocity2.y + acceleration.y * dt;
 	velocity.x = velocity.x;
@@ -31,8 +33,8 @@ void Particle::calculation(float dt)
 	coord.y = coord.y + ((v + velocity.y) / 2) * dt;
 	coord.x = coord.x +velocity.x* dt;
 
-	coord2.y = coord2.y + ((v + velocity.y) / 2) * dt;
-	coord2.x = coord2.x + velocity.x * dt;
+	coord2.y = coord2.y + ((v2 + velocity2.y) / 2) * dt;
+	coord2.x = coord2.x + velocity2.x * dt;
 
 	//std::cout << "calc coord " << coord.y << "\n\n";
 
@@ -66,6 +68,7 @@ void Particle::calculation(float dt)
 
 		//P'h = Ph - 2[(Ph-S)*N]N
 		coord.y = coord.y - 2 * ((coord.y - 690.0f) * 1) * 1;
+		coord2.y = coord.y - 2 * ((coord.y - 690.0f) * 1) * 1;
 
 		//P't = Pt - 2[(Pt-S)*N]N
 		//coord2.y = coord2.y - 2 * ((coord2.y - 690.0f) * 1) * 1;
@@ -99,7 +102,7 @@ void Particle::calculation(float dt)
 		velocity2.y = (1 - u) * Vt.y - e * Vn.y;
 
 		//P't = Pt - 2[(Pt-S)*N]N
-		coord2.y = coord2.y - 2 * ((coord2.y - 690.0f) * 1) * 1;
+		//coord2.y = coord2.y - 2 * ((coord2.y - 690.0f) * 1) * 1;
 	}
 	if (coord.x <= 100 || coord.x >=690 && circle.getRadius() == 5.0f) {
 
@@ -136,7 +139,7 @@ void Particle::calculation(float dt)
 			S = 100.0f;
 		else S = 690.0f;
 		//P'h = Ph - 2[(Ph-S)*N]N
-		coord2.x = coord2.x - 2 * ((coord2.x - S) * 1) * 1;
+		//coord2.x = coord2.x - 2 * ((coord2.x - S) * 1) * 1;
 
 		//P't = Pt - 2[(Pt-S)*N]N
 		//coord2.x = coord2.x - 2 * ((coord2.x - S) * 1) * 1;
@@ -187,7 +190,7 @@ void Particle::calculation(float dt)
 		velocity2.y = (1 - u) * Vt.y - e * Vn.y;
 
 		//P't = Pt - 2[(Pt-S)*N]N
-		coord2.y = coord2.y - 2 * ((coord2.y - 680.0f) * 1) * 1;
+		//coord2.y = coord2.y - 2 * ((coord2.y - 680.0f) * 1) * 1;
 	}
 	if (coord.x <= 100 || coord.x >= 680 && circle.getRadius() == 10.0f) {
 
@@ -224,7 +227,7 @@ void Particle::calculation(float dt)
 			S = 100.0f;
 		else S = 680.0f;
 		//P'h = Ph - 2[(Ph-S)*N]N
-		coord2.x = coord2.x - 2 * ((coord2.x - S) * 1) * 1;
+		//coord2.x = coord2.x - 2 * ((coord2.x - S) * 1) * 1;
 
 		//P't = Pt - 2[(Pt-S)*N]N
 		//coord2.x = coord2.x - 2 * ((coord2.x - S) * 1) * 1;

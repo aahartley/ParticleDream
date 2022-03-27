@@ -2,31 +2,103 @@
 #include "Particle.h"
 #include "Matrix.h"
 #include <iostream>
-constexpr float acceleration = 10.0f;
+float acceleration = 800.0f;
+constexpr float u = 1.0f;
+constexpr float e = 0.5f;
+
 Sim::Sim() {
     sf::ContextSettings settings;
     settings.antialiasingLevel = 8;
     window = new sf::RenderWindow(sf::VideoMode(800, 800), "Particles", sf::Style::Default, settings);
 }
+void collision(Matrix& matrix) {
+    for (int i = 0; i < 2; i++) {
 
+        if ((matrix[i][3] >= 690 || matrix[i][3] <= 200) && matrix[i][6] == 5.0f) {
+            // Vn = (V*N)N
+            sf::Vector2f Vn{ matrix[i][0],(matrix[i][1] * 1) * 1 };
+            //Vt = V-Vn      
+            sf::Vector2f Vt{ matrix[i][0],(matrix[i][1] - Vn.y) };
+
+            //V' = (1-u)Vt-eVn    //u- friction   //e-resilience   0.0-1.0
+            matrix[i][1] = (1 - u) * Vt.y - e * Vn.y;
+            float S;
+            if (matrix[i][3] <= 200)S = 200.0f;
+            if (matrix[i][3] >= 690)S = 690.0f;
+            //P'h = Ph - 2[(Ph-S)*N]N
+            matrix[i][3] = matrix[i][3] - 2 * ((matrix[i][3] - S) * 1) * 1;
+            //P't = Pt - 2[(Pt-S)*N]N
+            matrix[i][5] = matrix[i][5] - 2 * ((matrix[i][5] - S) * 1) * 1;
+        }
+        if ((matrix[i][2] >= 690 || matrix[i][2] <= 100) && matrix[i][6] == 5.0f) {
+            // Vn = (V*N)N
+            sf::Vector2f Vn{ matrix[i][0],(matrix[i][1] * 1) * 1 };
+            //Vt = V-Vn      
+            sf::Vector2f Vt{ matrix[i][0],(matrix[i][1] - Vn.y) };
+
+            //V' = (1-u)Vt-eVn    //u- friction   //e-resilience   0.0-1.0
+            matrix[i][0] = (1 - u) * Vt.x - e * Vn.x;
+            float S;
+            if (matrix[i][2] <= 100)S = 100.0f;
+            if (matrix[i][2] >= 690)S = 690.0f;
+            //P'h = Ph - 2[(Ph-S)*N]N
+            matrix[i][2] = matrix[i][2] - 2 * ((matrix[i][2] - S) * 1) * 1;
+            //P't = Pt - 2[(Pt-S)*N]N
+            matrix[i][4] = matrix[i][4] - 2 * ((matrix[i][4] - S) * 1) * 1;
+        }
+
+
+        
+
+        if ((matrix[i][3] >= 680 || matrix[i][3] <= 200) && matrix[i][6] == 10.0f) {
+            // Vn = (V*N)N
+            sf::Vector2f Vn{ matrix[i][0],(matrix[i][1] * 1) * 1 };
+            //Vt = V-Vn      
+            sf::Vector2f Vt{ matrix[i][0],(matrix[i][1] - Vn.y) };
+
+            //V' = (1-u)Vt-eVn    //u- friction   //e-resilience   0.0-1.0
+            matrix[i][1] = (1 - u) * Vt.y - e * Vn.y;
+            float S;
+            if (matrix[i][3] <= 200)S = 200.0f;
+            if (matrix[i][3] >= 680)S = 680.0f;
+            //P'h = Ph - 2[(Ph-S)*N]N
+            matrix[i][3] = matrix[i][3] - 2 * ((matrix[i][3] - S) * 1) * 1;
+            //P't = Pt - 2[(Pt-S)*N]N
+            matrix[i][5] = matrix[i][5] - 2 * ((matrix[i][5] - S) * 1) * 1;
+        }
+        if ((matrix[i][2] >= 680 || matrix[i][2] <= 100) && matrix[i][6] == 10.0f) {
+            // Vn = (V*N)N
+            sf::Vector2f Vn{ matrix[i][0],(matrix[i][1] * 1) * 1 };
+            //Vt = V-Vn      
+            sf::Vector2f Vt{ matrix[i][0],(matrix[i][1] - Vn.y) };
+
+            //V' = (1-u)Vt-eVn    //u- friction   //e-resilience   0.0-1.0
+            matrix[i][0] = (1 - u) * Vt.x - e * Vn.x;
+            float S;
+            if (matrix[i][2] <= 100)S = 100.0f;
+            if (matrix[i][2] >= 680)S = 680.0f;
+            //P'h = Ph - 2[(Ph-S)*N]N
+            matrix[i][2] = matrix[i][2] - 2 * ((matrix[i][2] - S) * 1) * 1;
+            //P't = Pt - 2[(Pt-S)*N]N
+            matrix[i][4] = matrix[i][4] - 2 * ((matrix[i][4] - S) * 1) * 1;
+        }
+        
+    }
+}
 void Sim::path(Matrix& matrix,float dt,std::vector<Particle*>& buffer) {
-    float transform[5][1]= {
+    float transform[7]= {
                              {0}, //vx
                              {acceleration * dt}, //vy
                              {0},  //x
-                             {-0.5*acceleration* dt*dt}, //y
-                             {1} //z
+                             {0}, //y
+                             {0}, //cx2
+                             {0}, //cy2
+                             {0} //rad
                            };
     
     matrix.add(transform,dt);
-    for (int i = 0; i < 2; i++) {
-
-        if (matrix[i][3] >= 690) {
-            float v = matrix[i][1];
-            matrix[i][1] = matrix[i][1] - 2 * (matrix[i][1] * 1) * 1;
-            matrix[i][3] += ((v + matrix[i][1]) / 2) * dt;
-        }
-    }
+    collision(matrix);
+    /*
     for (int i = 0; i < buffer.size(); i++) {
         for (int j = 0; j < 1; j++) {
             buffer[i]->velocity.x = matrix[i][j];
@@ -38,7 +110,7 @@ void Sim::path(Matrix& matrix,float dt,std::vector<Particle*>& buffer) {
 
         }
         buffer[i]->circle.setPosition(buffer[i]->coord);
-    }
+    }*/
 }
 void Sim::draw() {
     window->setFramerateLimit(60);
@@ -47,7 +119,7 @@ void Sim::draw() {
     sf::CircleShape circle{ 5.0f };
     circle.setPosition(p1.coord);
     p1.circle = circle;
-    p1.coord2 = sf::Vector2f{ p1.coord.x,p1.coord.y - 5 };
+    p1.coord2 = sf::Vector2f{ p1.coord.x,p1.coord.y - 1 };
     sf::CircleShape tail{ 5.0f };
     tail.setFillColor(sf::Color::Red);
     tail.setPosition(p1.coord2);
@@ -69,8 +141,8 @@ void Sim::draw() {
     buffer.push_back(&p1);
     buffer.push_back(&p2);
 
-    Matrix coords;
-    coords.fill(buffer);
+    Matrix particles;
+    particles.fill(buffer);
 
     sf::Vertex lines[] =
     {
@@ -109,10 +181,22 @@ void Sim::draw() {
     float dt = 1.0f / 60.0f;
     dt = 0.12f;
     bool first = true;
+    float time = 0.0f;
     while (window->isOpen())
     {
         //  time_sleep = sf::Time::Zero;
         dt = clock.restart().asSeconds();
+        time += dt;
+       // std::cout << time << "\n";
+        if (time > 5)acceleration = -800.0f;
+        if (time > 5*2)acceleration = 800.0f;
+        if (time > 5 * 3)acceleration = -800.0f;
+        if (time > 5 * 4)acceleration = 800.0f;
+        if (time > 5 * 5)acceleration = -800.0f;
+
+
+
+
       //  std::cout << dt << '\n';
         sf::Event event;
         while (window->pollEvent(event))
@@ -144,17 +228,31 @@ void Sim::draw() {
     
         //#pragma omp parallel for num_threads(2) schedule(static)
         for (int i = 0; i < buffer.size(); i++) {
-                    buffer[i]->calculation(dt);
+                   // buffer[i]->calculation(dt);
         }
         t.constant(dt);
 
-      //  path(coords,dt,buffer);
+        path(particles,dt,buffer);
         
  
             window->clear();
+            /*
             for (int i = 0; i < buffer.size(); i++) {
                 window->draw(buffer[i]->circle);
                 window->draw(buffer[i]->circle2);
+
+            }*/
+            for (int i = 0; i < 2; i++) {
+                sf::CircleShape circle;
+              //  std::cout << particles[i][6];
+                circle.setRadius(particles[i][6]);
+                circle.setPosition(sf::Vector2f{ particles[i][2],particles[i][3] });
+                sf::CircleShape circle2;
+                circle2.setRadius(particles[i][6]);
+                circle2.setPosition(sf::Vector2f{ particles[i][4],particles[i][5] });
+               // circle2.setFillColor(sf::Color::Red);
+                window->draw(circle);
+                window->draw(circle2);
 
             }
             window->draw(t.circle);
