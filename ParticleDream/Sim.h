@@ -8,7 +8,7 @@ class Sim {
 public:
 	Sim();
 	~Sim() { delete window; }
-	void path(Matrix& matrix,float dt, std::vector<Particle*>& buffer);
+	void path(Matrix& matrix,float dt);
 	void draw();
 private:
 	sf::RenderWindow* window;

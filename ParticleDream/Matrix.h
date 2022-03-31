@@ -3,6 +3,7 @@
 #include <iostream>
 #include <vector>
 #include "Particle.h"
+#include <omp.h>
 class Matrix {
 public:
 	Matrix() {};
@@ -11,8 +12,8 @@ public:
 	float* operator [] (uint8_t i) { return m[i]; }
 	void multiply(float matrix[7]);
 	void add(float matrix[7], float dt);
-	void fill(std::vector<Particle*> particles);
+	void fill();
 private:
-	float m[1000][7]{ };
-	int num = 1000;
+	float m[10'000][7]{ };
+	int num = 10'000;
 };
