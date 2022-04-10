@@ -2,9 +2,9 @@
 #include "Particle.h"
 #include "Matrix.h"
 #include <iostream>
-float acceleration = 800.0f;
-constexpr float u = 1.0f;
-constexpr float e = 0.3f;
+float acceleration = 3000;
+constexpr float u = 0.5f;
+constexpr float e = 0.5f;
 int num = 1000;
 
 Sim::Sim() {
@@ -56,9 +56,9 @@ void collision(Matrix& matrix) {
         //obstacle  100,500 300,700   
 
         //std::cout << m * point.x + b << "\n";
-        if (point.y>=point.x+400&&(point.y<=695&&point.x<=300)) {
+        if (point.y>=point.x+400&&point.y<=695&&point.x<=300) {
            // std::cout << "WORKING\n";
-            sf::Vector2f N{ (float)std::cos(320),(float)std::sin(320) };
+            sf::Vector2f N{ (float)std::cos(0),(float)std::sin(0) };
             // Vn = (V*N)N
             sf::Vector2f Vn{ (matrix[i][0] * N.x) * N.x,(matrix[i][1] * N.y) * N.y };
             //Vt = V-Vn      
@@ -69,12 +69,12 @@ void collision(Matrix& matrix) {
             matrix[i][1] = (1 - u) * Vt.y - e * Vn.y;
             float S = point.y;
             //P'h = Ph - 2[(Ph-S)*N]N
-            matrix[i][2] = matrix[i][2] - 2 * ((matrix[i][2] - point.x-2) * N.x) * N.x;
+            matrix[i][2] = matrix[i][2] - 2 * ((matrix[i][2] - point.x-1) * N.x) * N.x;
             matrix[i][3] = matrix[i][3] - 2 * ((matrix[i][3] - S+2) * N.y) * N.y;
             //P't = Pt - 2[(Pt-S)*N]N
-            matrix[i][4] = matrix[i][4] - 2 * ((matrix[i][4] - point.x-2) * 1) * 1;
+            matrix[i][4] = matrix[i][4] - 2 * ((matrix[i][4] - point.x-1) * 1) * 1;
             matrix[i][5] = matrix[i][5] - 2 * ((matrix[i][5] - S+2) * 1) * 1;
-            matrix[i][6] = 1;
+         //   matrix[i][6] = 1;
 
         }
         
@@ -92,35 +92,38 @@ void collision(Matrix& matrix) {
             if (matrix[i][3] <= 198)S = 198.0f;
             if (matrix[i][3] >= 700)S = 700;
             //P'h = Ph - 2[(Ph-S)*N]N
-           // matrix[i][2] = matrix[i][2] - 2 * ((matrix[i][2] - point.x) * 1) * 1;
+            matrix[i][2] = matrix[i][2] - 2 * ((matrix[i][2] - point.x-1) * 1) * 1;
             matrix[i][3] = matrix[i][3] - 2 * ((matrix[i][3] - S) * 1) * 1;
             //P't = Pt - 2[(Pt-S)*N]N
-            //matrix[i][4] = matrix[i][4] - 2 * ((matrix[i][4] - point.x) * 1) * 1;
+            matrix[i][4] = matrix[i][4] - 2 * ((matrix[i][4] - point.x-1) * 1) * 1;
             matrix[i][5] = matrix[i][5] - 2 * ((matrix[i][5] - S) * 1) * 1;
             matrix[i][6] = 1;
 
         }    
-         /*
+         
          //left and right
         if ((matrix[i][2] >= 698 || matrix[i][2] <= 101) ) {
             // Vn = (V*N)N
-            sf::Vector2f Vn{ matrix[i][0],(matrix[i][1] * 1) * 1 };
+            sf::Vector2f Vn{ (matrix[i][0]*1)*1,(matrix[i][1] * 1) * 1 };
             //Vt = V-Vn      
-            sf::Vector2f Vt{ matrix[i][0],(matrix[i][1] - Vn.y) };
+            sf::Vector2f Vt{ matrix[i][0]-Vn.x,(matrix[i][1] - Vn.y) };
 
             //V' = (1-u)Vt-eVn    //u- friction   //e-resilience   0.0-1.0
             matrix[i][0] = (1 - u) * Vt.x - e * Vn.x;
+            matrix[i][1] = (1 - u) * Vt.y - e * Vn.y;
             float S = 0;
             if (matrix[i][2] <= 101)S = 101.0f;
             if (matrix[i][2] >= 698)S = 698.0f;
             //P'h = Ph - 2[(Ph-S)*N]N
             matrix[i][2] = matrix[i][2] - 2 * ((matrix[i][2] - S) * 1) * 1;
+            matrix[i][3] = matrix[i][3] - 2 * ((matrix[i][3] - S) * 1) * 1;
             //P't = Pt - 2[(Pt-S)*N]N
             matrix[i][4] = matrix[i][4] - 2 * ((matrix[i][4] - S) * 1) * 1;
+            matrix[i][5] = matrix[i][5] - 2 * ((matrix[i][5] - S) * 1) * 1;
             matrix.fill();
         }
 
-        */
+        
         
 
      
