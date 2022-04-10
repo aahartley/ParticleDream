@@ -14,6 +14,6 @@ public:
 	void add(float matrix[7], float dt);
 	void fill();
 private:
-	float m[10'000][7]{ };
-	int num = 10'000;
+	float m[1000][7]{ };
+	int num = 1000;
 };

@@ -13,29 +13,27 @@ void Matrix::fill() {
 
 		}
 	}*/
-	float x = 101.0f;
-	float y = 200.0f;
-	#pragma omp parallel for num_threads(2)
+	float x = 102.0f;
+	float y = 201.0f;
+//	#pragma omp parallel for num_threads(2)
 	for (int i = 0; i < num; i++) {
-		if (i % 2 == 1) {
-			m[i][3] = y-10; //cy
-			m[i][5] = y-10; //cy2
-			m[i][6] = 10.0f; //rad
-		}
-		else {
+
+		
 			m[i][3] = y; //cy
 			m[i][5] = y; //cy2
-			m[i][6] = 5.0f; //rad
-		}
-		m[i][0] = 100.0f; //vx
+		
+		m[i][0] = 0.0f; //vx
 		m[i][1] = 0.0f; //vy
 		m[i][2] = x; //cx
 		m[i][4] = x; //cx2
-		if (i % 5 == 0) {
+		if (i % 10 == 0) {
 						x++;
 
 		}
-		y++;
+		if (y > 500)
+			y = 0;
+		else
+			y++;
 
 
 
@@ -61,7 +59,7 @@ Matrix::Matrix(float x, float y, float n) {
 	//std::cout << '\n';
 }
 void Matrix::add(float trans[7], float dt) {
-	#pragma omp parallel for num_threads(2)
+	//#pragma omp parallel for num_threads(2)
 	for (int i = 0; i <num; i++) {
 		m[i][0] += trans[0];
 		m[i][1] += trans[1];// vy

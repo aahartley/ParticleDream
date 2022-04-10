@@ -5,7 +5,7 @@
 float acceleration = 800.0f;
 constexpr float u = 1.0f;
 constexpr float e = 0.3f;
-int num = 10'000;
+int num = 1000;
 
 Sim::Sim() {
     sf::ContextSettings settings;
@@ -13,10 +13,10 @@ Sim::Sim() {
     window = new sf::RenderWindow(sf::VideoMode(800, 800), "Particles", sf::Style::Default, settings);
 }
 void collision(Matrix& matrix) {
-   #pragma omp parallel for num_threads(2)
+  // #pragma omp parallel for num_threads(2)
     for (int i = 0; i < num; i++) {
         matrix[i][6] = 0;
-
+        /*
         if ((matrix[i][3] >= 250 || matrix[i][3] <= 198)&& matrix[i][2] <= 200) {
             // Vn = (V*N)N
             sf::Vector2f Vn{ matrix[i][0],(matrix[i][1] * 1) * 1 };
@@ -51,26 +51,58 @@ void collision(Matrix& matrix) {
             matrix[i][5] = matrix[i][5] - 2 * ((matrix[i][5] - S) * 1) * 1;
             matrix[i][6] = 1;
 
-        }
-         if ((matrix[i][3] >= 698 || matrix[i][3] <= 198) ) {
-           // Vn = (V*N)N
-            sf::Vector2f Vn{ matrix[i][0],(matrix[i][1] * 1) * 1 };
+        }*/
+        sf::Vector2f point{ matrix[i][2],matrix[i][3] };
+        //obstacle  100,500 300,700   
+
+        //std::cout << m * point.x + b << "\n";
+        if (point.y>=point.x+400&&(point.y<=695&&point.x<=300)) {
+           // std::cout << "WORKING\n";
+            sf::Vector2f N{ (float)std::cos(320),(float)std::sin(320) };
+            // Vn = (V*N)N
+            sf::Vector2f Vn{ (matrix[i][0] * N.x) * N.x,(matrix[i][1] * N.y) * N.y };
             //Vt = V-Vn      
-            sf::Vector2f Vt{ matrix[i][0],(matrix[i][1] - Vn.y) };
+            sf::Vector2f Vt{ matrix[i][0] - Vn.x,(matrix[i][1] - Vn.y) };
 
             //V' = (1-u)Vt-eVn    //u- friction   //e-resilience   0.0-1.0
+            matrix[i][0] = (1 - u) * Vt.x - e * Vn.x;
+            matrix[i][1] = (1 - u) * Vt.y - e * Vn.y;
+            float S = point.y;
+            //P'h = Ph - 2[(Ph-S)*N]N
+            matrix[i][2] = matrix[i][2] - 2 * ((matrix[i][2] - point.x-2) * N.x) * N.x;
+            matrix[i][3] = matrix[i][3] - 2 * ((matrix[i][3] - S+2) * N.y) * N.y;
+            //P't = Pt - 2[(Pt-S)*N]N
+            matrix[i][4] = matrix[i][4] - 2 * ((matrix[i][4] - point.x-2) * 1) * 1;
+            matrix[i][5] = matrix[i][5] - 2 * ((matrix[i][5] - S+2) * 1) * 1;
+            matrix[i][6] = 1;
+
+        }
+        
+        //floor and top
+         if ((matrix[i][3] >= 700 || matrix[i][3] <= 198) ) {
+           // Vn = (V*N)N
+            sf::Vector2f Vn{ (matrix[i][0]*1)*1,(matrix[i][1] * 1) * 1 };
+            //Vt = V-Vn      
+            sf::Vector2f Vt{ matrix[i][0]-Vn.x,(matrix[i][1] - Vn.y) };
+
+            //V' = (1-u)Vt-eVn    //u- friction   //e-resilience   0.0-1.0
+            matrix[i][0] = (1 - u) * Vt.x - e * Vn.x;
             matrix[i][1] = (1 - u) * Vt.y - e * Vn.y;
             float S = 0;
             if (matrix[i][3] <= 198)S = 198.0f;
-            if (matrix[i][3] >= 698)S = 698.0f;
+            if (matrix[i][3] >= 700)S = 700;
             //P'h = Ph - 2[(Ph-S)*N]N
+           // matrix[i][2] = matrix[i][2] - 2 * ((matrix[i][2] - point.x) * 1) * 1;
             matrix[i][3] = matrix[i][3] - 2 * ((matrix[i][3] - S) * 1) * 1;
             //P't = Pt - 2[(Pt-S)*N]N
+            //matrix[i][4] = matrix[i][4] - 2 * ((matrix[i][4] - point.x) * 1) * 1;
             matrix[i][5] = matrix[i][5] - 2 * ((matrix[i][5] - S) * 1) * 1;
             matrix[i][6] = 1;
 
-        }       
-        if ((matrix[i][2] >= 698 || matrix[i][2] <= 100) ) {
+        }    
+         /*
+         //left and right
+        if ((matrix[i][2] >= 698 || matrix[i][2] <= 101) ) {
             // Vn = (V*N)N
             sf::Vector2f Vn{ matrix[i][0],(matrix[i][1] * 1) * 1 };
             //Vt = V-Vn      
@@ -79,7 +111,7 @@ void collision(Matrix& matrix) {
             //V' = (1-u)Vt-eVn    //u- friction   //e-resilience   0.0-1.0
             matrix[i][0] = (1 - u) * Vt.x - e * Vn.x;
             float S = 0;
-            if (matrix[i][2] <= 100)S = 100.0f;
+            if (matrix[i][2] <= 101)S = 101.0f;
             if (matrix[i][2] >= 698)S = 698.0f;
             //P'h = Ph - 2[(Ph-S)*N]N
             matrix[i][2] = matrix[i][2] - 2 * ((matrix[i][2] - S) * 1) * 1;
@@ -88,7 +120,7 @@ void collision(Matrix& matrix) {
             matrix.fill();
         }
 
-
+        */
         
 
      
@@ -184,6 +216,11 @@ void Sim::draw() {
     {
         sf::Vertex(sf::Vector2f{700,100}),
         sf::Vertex(sf::Vector2f{700,700})
+    };
+    sf::Vertex line5[] =
+    {
+        sf::Vertex(sf::Vector2f{100,500}),
+        sf::Vertex(sf::Vector2f{300,700})
     };
     sf::Clock clock;
     sf::Time time_per_frame = sf::seconds(1.f / 60.f);
@@ -287,10 +324,11 @@ void Sim::draw() {
             window->draw(points);
            // window->draw(t.circle);
             window->draw(lines, 2, sf::Lines);
-            window->draw(line, 2, sf::Lines);
+          //  window->draw(line, 2, sf::Lines);
             window->draw(line2, 2, sf::Lines);
             window->draw(line3, 2, sf::Lines);
             window->draw(line4, 2, sf::Lines);
+            window->draw(line5, 2, sf::Lines);
             window->display();
             
         
