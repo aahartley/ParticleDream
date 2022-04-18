@@ -13,7 +13,7 @@ public:
 	void multiply(float matrix[7]);
 	void add(float matrix[7], float dt);
 	void fill();
+	int num = 1000;
 private:
 	float m[1000][7]{ };
-	int num = 1000;
 };
