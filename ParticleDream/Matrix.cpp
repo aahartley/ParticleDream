@@ -1,5 +1,95 @@
 #include "Matrix.h"
+void Matrix::collision() {
+	constexpr float u = 0.1f;
+	constexpr float e = 0.9f;
+	//#pragma omp parallel for num_threads(2)
+	for (int i = 0; i < num; i++) {
+		m[i][6] = 0;
 
+		sf::Vector2f point{ m[i][2],m[i][3] };
+		//obstacle  100,500 300,700   
+
+		//std::cout << m * point.x + b << "\n";
+		if (point.y >= point.x + 400 && point.y <= 750 && point.x <= 300) {
+			// std::cout << "WORKING\n";
+			sf::Vector2f N{ (float)std::cos(3.14 / 4),(float)-std::sin(3.14 / 4) };
+			//N.x = 0;
+		  // N.y = 1;
+			// Vn = (V*N)N
+			sf::Vector2f Vn{ (m[i][0] * N.x + m[i][1] * N.y) * N.x,    (m[i][0] * N.x + m[i][1] * N.y) * N.y };
+			//Vt = V-Vn      
+			sf::Vector2f Vt{ m[i][0] - Vn.x,      (m[i][1] - Vn.y) };
+
+			//V' = (1-u)Vt-eVn    //u- friction   //e-resilience   0.0-1.0
+			m[i][0] = (1 - u) * Vt.x - e * Vn.x;
+			m[i][1] = (1 - u) * Vt.y - e * Vn.y;
+			float S = point.y;
+			//P'h = Ph - 2[(Ph-S)*N]N
+			m[i][2] = m[i][2] - 2 * ((m[i][2] - point.x - 1) * N.x + m[i][3] - S + 2 * N.y) * N.x;
+			m[i][3] = m[i][3] - 2 * ((m[i][3] - S + 2) * N.y + m[i][2] - point.x - 1 * N.x) * N.y;
+			//P't = Pt - 2[(Pt-S)*N]N
+			m[i][4] = m[i][4] - 2 * ((m[i][4] - point.x - 1) * N.x + m[i][5] - S + 2 * N.y) * N.x;
+			m[i][5] = m[i][5] - 2 * ((m[i][5] - S + 2) * N.y + m[i][4] - point.x - 1 * N.x) * N.y;
+			//   matrix[i][6] = 1;
+
+		}
+
+		//floor and top
+		else if ((m[i][3] >= 700 || m[i][3] <= 198)) {
+			sf::Vector2f N{ 0,1 };
+
+			// Vn = (V*N)N
+			sf::Vector2f Vn{ 0 , (m[i][1] * 1) * 1 };
+			//Vt = V-Vn      
+			sf::Vector2f Vt{ m[i][0] - Vn.x,(m[i][1] - Vn.y) };
+
+			//V' = (1-u)Vt-eVn    //u- friction   //e-resilience   0.0-1.0
+			m[i][0] = (1 - u) * Vt.x - e * Vn.x;
+			m[i][1] = (1 - u) * Vt.y - e * Vn.y;
+			float S = 0;
+			if (m[i][3] <= 198)S = 198.0f;
+			if (m[i][3] >= 700)S = 700;
+			//P'h = Ph - 2[(Ph-S)*N]N
+			m[i][2] = m[i][2] - 2 * ((m[i][2] - point.x - 1) * 1) * 1;
+			m[i][3] = m[i][3] - 2 * ((m[i][3] - S) * 1) * 1;
+			//P't = Pt - 2[(Pt-S)*N]N
+			m[i][4] = m[i][4] - 2 * ((m[i][4] - point.x - 1) * 1) * 1;
+			m[i][5] = m[i][5] - 2 * ((m[i][5] - S) * 1) * 1;
+			m[i][6] = 1;
+
+		}
+
+		//left and right
+		  if ((m[i][2] >= 698 || m[i][2] <= 101)) {
+			sf::Vector2f N{ 0,1 };
+
+			// Vn = (V*N)N
+			sf::Vector2f Vn{ (m[i][0] * 1) * 1,(m[i][1] * 1) * 1 };
+			//Vt = V-Vn      
+			sf::Vector2f Vt{ m[i][0] - Vn.x,(m[i][1] - Vn.y) };
+
+			//V' = (1-u)Vt-eVn    //u- friction   //e-resilience   0.0-1.0
+			m[i][0] = (1 - u) * Vt.x - e * Vn.x;
+			m[i][1] = (1 - u) * Vt.y - e * Vn.y;
+			float S = 0;
+			if (m[i][2] <= 101)S = 101.0f;
+			if (m[i][2] >= 698)S = 698.0f;
+			//P'h = Ph - 2[(Ph-S)*N]N
+			m[i][2] = m[i][2] - 2 * ((m[i][2] - S) * 1) * 1;
+			m[i][3] = m[i][3] - 2 * ((m[i][3] - S) * 1) * 1;
+			//P't = Pt - 2[(Pt-S)*N]N
+			m[i][4] = m[i][4] - 2 * ((m[i][4] - S) * 1) * 1;
+			m[i][5] = m[i][5] - 2 * ((m[i][5] - S) * 1) * 1;
+			// matrix.fill();
+		}
+
+
+
+
+
+
+	}
+}
 void Matrix::fill() {
 	/*
 	for (int i = 0; i < particles.size(); i++) {

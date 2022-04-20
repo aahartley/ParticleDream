@@ -13,6 +13,7 @@ public:
 	void multiply(float matrix[7]);
 	void add(float matrix[7], float dt);
 	void fill();
+	void collision();
 	int num = 1000;
 private:
 	float m[1000][7]{ };

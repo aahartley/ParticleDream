@@ -7,6 +7,7 @@ float xacc = 0;
 constexpr float u = 0.1f;
 constexpr float e = 0.9f;
 int num = 1000;
+Matrix particles;
 
 Sim::Sim() {
     sf::ContextSettings settings;
@@ -14,13 +15,13 @@ Sim::Sim() {
     window = new sf::RenderWindow(sf::VideoMode(800, 800), "Particles", sf::Style::Default, settings);
 }
 void collision(Matrix& matrix) {
-  // #pragma omp parallel for num_threads(2)
+   //#pragma omp parallel for num_threads(2)
     for (int i = 0; i < num; i++) {
         matrix[i][6] = 0;
       
         sf::Vector2f point{ matrix[i][2],matrix[i][3] };
         //obstacle  100,500 300,700   
-
+        
         //std::cout << m * point.x + b << "\n";
         if (point.y>=point.x+400&&point.y<=750&&point.x<=300) {
            // std::cout << "WORKING\n";
@@ -51,7 +52,7 @@ void collision(Matrix& matrix) {
              sf::Vector2f N{ 0,1 };
 
            // Vn = (V*N)N
-             sf::Vector2f Vn{ 0/*matrix[i][0] * 1) * 1*/,(matrix[i][1] * 1) * 1 };
+             sf::Vector2f Vn{ 0 , (matrix[i][1] * 1) * 1 };
              //Vt = V-Vn      
             sf::Vector2f Vt{ matrix[i][0]-Vn.x,(matrix[i][1] - Vn.y) };
 
@@ -72,7 +73,7 @@ void collision(Matrix& matrix) {
         }    
          
          //left and right
-        if ((matrix[i][2] >= 698 || matrix[i][2] <= 101) ) {
+         else   if ((matrix[i][2] >= 698 || matrix[i][2] <= 101&&matrix[i][3]<point.x+400) ) {
             sf::Vector2f N{ 0,1 };
 
             // Vn = (V*N)N
@@ -95,7 +96,7 @@ void collision(Matrix& matrix) {
            // matrix.fill();
         }
 
-        
+     
         
 
      
@@ -159,7 +160,6 @@ void Sim::draw() {
     buffer.push_back(&p1);
     buffer.push_back(&p2);
     */
-    Matrix particles;
     std::cout << "Type number of particles \n";
     int numOfP{ 0 };
    // std::cin >> num;
